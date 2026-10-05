@@ -34,4 +34,4 @@ RUN chown -R www-data:www-data /app/storage /app/bootstrap/cache
 
 EXPOSE 80
 
-CMD php artisan package:discover --ansi && apache2-foreground
+CMD php artisan config:clear && php artisan route:clear && apache2-foreground

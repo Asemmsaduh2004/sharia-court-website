@@ -27,7 +27,8 @@ WORKDIR /app
 COPY . .
 
 # Install dependencies ignoring platform requirements
-RUN composer install --no-interaction --prefer-dist --optimize-autoloader --no-scripts
+RUN composer install --no-interaction --prefer-dist --optimize-autoloader --no-scripts --ignore-platform-reqs
+
 # Fix permissions
 RUN chown -R www-data:www-data /app/storage /app/bootstrap/cache
 

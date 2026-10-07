@@ -1,7 +1,7 @@
-FROM php:8.2-apache
+FROM php:8.1-apache
 
 # Install system dependencies & PHP extensions
-RUN apt-get update || true && apt-get install -y --fix-missing \
+RUN apt-get update && apt-get install -y --fix-missing \
     git \
     unzip \
     libpq-dev \
@@ -33,9 +33,9 @@ WORKDIR /app
 # Copy application files
 COPY . .
 
-# Force fresh install of dependencies without legacy restrictions
+# Force fresh clean install with compatible symfony modules
 RUN rm -rf vendor composer.lock \
-    && composer update --no-interaction --prefer-dist --optimize-autoloader --no-scripts --ignore-platform-reqs
+    && composer require symfony/http-foundation:^5.4 symfony/routing:^5.4 --no-interaction --ignore-platform-reqs
 
 # Fix permissions
 RUN chown -R www-data:www-data /app/storage /app/bootstrap/cache

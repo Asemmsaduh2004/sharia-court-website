@@ -33,13 +33,18 @@ WORKDIR /app
 # Copy application files
 COPY . .
 
-# Remove any vendor/lock files and perform clean composer install for PHP 8.3
+# Remove any vendor/lock files and perform clean composer install
 RUN rm -rf vendor composer.lock \
     && composer install --no-interaction --prefer-dist --optimize-autoloader --no-scripts
 
-# Fix permissions
-RUN chown -R www-data:www-data /app/storage /app/bootstrap/cache
+# Create .env from .env.example if missing
+RUN cp -n .env.example .env || true
+
+# Set permissions for storage and bootstrap/cache
+RUN chmod -R 777 /app/storage /app/bootstrap/cache \
+    && chown -R www-data:www-data /app/storage /app/bootstrap/cache
 
 EXPOSE 80
 
-CMD ["apache2-foreground"]
+# Command to ensure key generation, cache clear and start apache
+CMD php artisan key:generate --force && php artisan config:clear && php artisan cache:clear && apache2-foreground

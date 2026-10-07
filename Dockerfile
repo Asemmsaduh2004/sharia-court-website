@@ -1,4 +1,4 @@
-FROM php:8.2-apache
+FROM php:8.0-apache
 
 # Install system dependencies & PHP extensions
 RUN apt-get update && apt-get install -y \
@@ -33,9 +33,11 @@ WORKDIR /app
 # Copy application files
 COPY . .
 
-# Force remove legacy vendor & lock file and build fresh dependencies
-RUN rm -rf vendor composer.lock \
-    && composer update --no-interaction --prefer-dist --optimize-autoloader --no-scripts --ignore-platform-reqs
+# Delete any existing vendor or lock files copied from git repo
+RUN rm -rf vendor composer.lock
+
+# Install dependencies cleanly for PHP 8.0
+RUN composer install --no-interaction --prefer-dist --optimize-autoloader --no-scripts --ignore-platform-reqs
 
 # Fix permissions
 RUN chown -R www-data:www-data /app/storage /app/bootstrap/cache

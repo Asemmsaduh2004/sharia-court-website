@@ -33,10 +33,10 @@ WORKDIR /app
 # Copy application files
 COPY . .
 
-# Update dependencies to be compatible with PHP 8.3
-RUN composer update symfony/http-foundation symfony/routing --no-interaction --ignore-platform-reqs
+# Clear old dependencies & install fresh compatible packages for PHP 8.3
+RUN composer update --no-interaction --prefer-dist --optimize-autoloader --no-scripts --ignore-platform-reqs
 
-# Fix permissions
+# Fix permissions for Laravel storage and cache
 RUN chown -R www-data:www-data /app/storage /app/bootstrap/cache
 
 EXPOSE 80

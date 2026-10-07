@@ -33,8 +33,8 @@ WORKDIR /app
 # Copy application files
 COPY . .
 
-# Install dependencies ignoring platform requirements
-RUN composer install --no-interaction --prefer-dist --optimize-autoloader --no-scripts --ignore-platform-reqs
+# Update dependencies to be compatible with PHP 8.3
+RUN composer update symfony/http-foundation symfony/routing --no-interaction --ignore-platform-reqs
 
 # Fix permissions
 RUN chown -R www-data:www-data /app/storage /app/bootstrap/cache

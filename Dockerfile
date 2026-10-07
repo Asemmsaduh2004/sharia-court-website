@@ -46,7 +46,7 @@ RUN chmod -R 777 /app/storage /app/bootstrap/cache \
 
 EXPOSE 80
 
-# Ensure database directory and file exist with full write permissions for www-data
+# Ensure database directory and file exist with full write permissions for www-data, run setup and start apache
 CMD mkdir -p /app/database \
     && touch /app/database/database.sqlite \
     && chown -R www-data:www-data /app/database \

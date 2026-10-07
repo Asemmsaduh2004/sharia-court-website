@@ -33,8 +33,9 @@ WORKDIR /app
 # Copy application files
 COPY . .
 
-# Remove local vendor folder if copied and install clean dependencies
-RUN rm -rf vendor composer.lock && composer install --no-interaction --prefer-dist --optimize-autoloader --no-scripts --ignore-platform-reqs
+# Force remove legacy vendor/lock files and force update symfony packages
+RUN rm -rf vendor composer.lock \
+    && composer update symfony/http-foundation symfony/routing --no-interaction --prefer-dist --optimize-autoloader --no-scripts --ignore-platform-reqs
 
 # Fix permissions
 RUN chown -R www-data:www-data /app/storage /app/bootstrap/cache

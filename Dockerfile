@@ -1,4 +1,4 @@
-FROM php:8.1-apache
+FROM php:7.4-apache
 
 # Install system dependencies & PHP extensions
 RUN apt-get update && apt-get install -y --fix-missing \
@@ -33,11 +33,7 @@ WORKDIR /app
 # Copy application files
 COPY . .
 
-# Force fresh clean install with compatible symfony modules
-RUN rm -rf vendor composer.lock \
-    && composer require symfony/http-foundation:^5.4 symfony/routing:^5.4 --no-interaction --ignore-platform-reqs
-
-# Fix permissions
+# Fix permissions for Laravel storage and cache
 RUN chown -R www-data:www-data /app/storage /app/bootstrap/cache
 
 EXPOSE 80

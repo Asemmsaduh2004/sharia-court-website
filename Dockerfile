@@ -1,4 +1,4 @@
-FROM php:8.3-apache
+FROM php:8.2-apache
 
 # Install system dependencies & PHP extensions
 RUN apt-get update && apt-get install -y \
@@ -33,10 +33,10 @@ WORKDIR /app
 # Copy application files
 COPY . .
 
-# Clear old dependencies & install fresh compatible packages for PHP 8.3
-RUN composer update --no-interaction --prefer-dist --optimize-autoloader --no-scripts --ignore-platform-reqs
+# Remove local vendor folder if copied and install clean dependencies
+RUN rm -rf vendor composer.lock && composer install --no-interaction --prefer-dist --optimize-autoloader --no-scripts --ignore-platform-reqs
 
-# Fix permissions for Laravel storage and cache
+# Fix permissions
 RUN chown -R www-data:www-data /app/storage /app/bootstrap/cache
 
 EXPOSE 80

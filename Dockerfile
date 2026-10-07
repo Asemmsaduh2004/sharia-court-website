@@ -1,7 +1,7 @@
-FROM php:7.4-apache
+FROM php:8.3-apache
 
 # Install system dependencies & PHP extensions
-RUN apt-get update && apt-get install -y --fix-missing \
+RUN apt-get update && apt-get install -y \
     git \
     unzip \
     libpq-dev \
@@ -33,7 +33,11 @@ WORKDIR /app
 # Copy application files
 COPY . .
 
-# Fix permissions for Laravel storage and cache
+# Remove any vendor/lock files and perform clean composer install for PHP 8.3
+RUN rm -rf vendor composer.lock \
+    && composer install --no-interaction --prefer-dist --optimize-autoloader --no-scripts
+
+# Fix permissions
 RUN chown -R www-data:www-data /app/storage /app/bootstrap/cache
 
 EXPOSE 80

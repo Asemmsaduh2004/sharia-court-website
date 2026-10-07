@@ -18,6 +18,13 @@ ENV APACHE_DOCUMENT_ROOT /app/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/conf-available/*.conf
 
+# Grant Apache permissions to /app/public directory
+RUN echo '<Directory /app/public/>\n\
+    Options Indexes FollowSymLinks\n\
+    AllowOverride All\n\
+    Require all granted\n\
+</Directory>' >> /etc/apache2/apache2.conf
+
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
@@ -34,5 +41,4 @@ RUN chown -R www-data:www-data /app/storage /app/bootstrap/cache
 
 EXPOSE 80
 
-# Start apache directly
 CMD ["apache2-foreground"]

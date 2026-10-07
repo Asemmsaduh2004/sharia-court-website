@@ -33,9 +33,9 @@ WORKDIR /app
 # Copy application files
 COPY . .
 
-# Install fresh dependencies
+# Force remove legacy vendor & lock file and build fresh dependencies
 RUN rm -rf vendor composer.lock \
-    && composer install --no-interaction --prefer-dist --optimize-autoloader --no-scripts --ignore-platform-reqs
+    && composer update --no-interaction --prefer-dist --optimize-autoloader --no-scripts --ignore-platform-reqs
 
 # Fix permissions
 RUN chown -R www-data:www-data /app/storage /app/bootstrap/cache

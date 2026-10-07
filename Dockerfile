@@ -33,9 +33,10 @@ WORKDIR /app
 # Copy application files
 COPY . .
 
-# Remove any vendor/lock files and perform clean composer install
+# Clean composer install and publish assets during build
 RUN rm -rf vendor composer.lock \
-    && composer install --no-interaction --prefer-dist --optimize-autoloader --no-scripts
+    && composer install --no-interaction --prefer-dist --optimize-autoloader --no-scripts \
+    && php artisan filament:upgrade || true
 
 # Create .env from .env.example if missing
 RUN cp -n .env.example .env || true
@@ -46,7 +47,7 @@ RUN chmod -R 777 /app/storage /app/bootstrap/cache \
 
 EXPOSE 80
 
-# Ensure database directory and file exist with full write permissions, run migrations & seeders, link storage, and start apache
+# Set up SQLite, permissions, migrations, seeders, and start apache
 CMD mkdir -p /app/database \
     && touch /app/database/database.sqlite \
     && chown -R www-data:www-data /app/database \
@@ -55,7 +56,7 @@ CMD mkdir -p /app/database \
     && php artisan migrate --force \
     && php artisan db:seed --force \
     && php artisan storage:link --force \
-    && php artisan filament:assets || true \
     && php artisan config:clear \
-    && php artisan cache:clear \
+    && php artisan route:clear \
+    && php artisan view:clear \
     && apache2-foreground

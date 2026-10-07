@@ -46,11 +46,13 @@ RUN chmod -R 777 /app/storage /app/bootstrap/cache \
 
 EXPOSE 80
 
-# Ensure database.sqlite exists, run migrations FIRST, then clear cache and start apache
+# Ensure database.sqlite exists, run migrations, link storage, publish assets and start apache
 CMD touch /app/database/database.sqlite \
     && chmod 777 /app/database/database.sqlite \
     && php artisan key:generate --force \
     && php artisan migrate --force \
+    && php artisan storage:link --force \
+    && php artisan filament:assets || true \
     && php artisan config:clear \
     && php artisan cache:clear \
     && apache2-foreground

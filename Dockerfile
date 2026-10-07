@@ -46,13 +46,14 @@ RUN chmod -R 777 /app/storage /app/bootstrap/cache \
 
 EXPOSE 80
 
-# Ensure database directory and file exist with full write permissions for www-data, run setup and start apache
+# Ensure database directory and file exist with full write permissions, run migrations & seeders, link storage, and start apache
 CMD mkdir -p /app/database \
     && touch /app/database/database.sqlite \
     && chown -R www-data:www-data /app/database \
     && chmod -R 777 /app/database \
     && php artisan key:generate --force \
     && php artisan migrate --force \
+    && php artisan db:seed --force \
     && php artisan storage:link --force \
     && php artisan filament:assets || true \
     && php artisan config:clear \

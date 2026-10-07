@@ -46,11 +46,11 @@ RUN chmod -R 777 /app/storage /app/bootstrap/cache \
 
 EXPOSE 80
 
-# Ensure database.sqlite exists, generate key, migrate and start apache
+# Ensure database.sqlite exists, run migrations FIRST, then clear cache and start apache
 CMD touch /app/database/database.sqlite \
     && chmod 777 /app/database/database.sqlite \
     && php artisan key:generate --force \
+    && php artisan migrate --force \
     && php artisan config:clear \
     && php artisan cache:clear \
-    && php artisan migrate --force \
     && apache2-foreground

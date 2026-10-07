@@ -46,9 +46,11 @@ RUN chmod -R 777 /app/storage /app/bootstrap/cache \
 
 EXPOSE 80
 
-# Ensure database.sqlite exists, run migrations, link storage, publish assets and start apache
-CMD touch /app/database/database.sqlite \
-    && chmod 777 /app/database/database.sqlite \
+# Ensure database directory and file exist with full write permissions for www-data
+CMD mkdir -p /app/database \
+    && touch /app/database/database.sqlite \
+    && chown -R www-data:www-data /app/database \
+    && chmod -R 777 /app/database \
     && php artisan key:generate --force \
     && php artisan migrate --force \
     && php artisan storage:link --force \

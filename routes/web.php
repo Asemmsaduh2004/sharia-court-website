@@ -14,3 +14,8 @@ Route::get('/', function () {
 Route::get('/admin/gallery', [GalleryController::class, 'adminIndex'])->name('admin.gallery.index');
 Route::post('/admin/gallery', [GalleryController::class, 'store'])->name('admin.gallery.store');
 Route::delete('/admin/gallery/{id}', [GalleryController::class, 'destroy'])->name('admin.gallery.destroy');
+Route::get('/run-migrations', function () {
+    \Illuminate\Support\Facades\Artisan::call('migrate:fresh --seed');
+    \Illuminate\Support\Facades\Artisan::call('storage:link');
+    return 'Database migrated & storage linked successfully!';
+});

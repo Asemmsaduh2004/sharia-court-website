@@ -71,7 +71,9 @@
         <tbody>
             @forelse($images as $img)
                 <tr>
-                    <td><img src="{{ asset('storage/' . $img->image_path) }}" class="thumb"></td>
+                    <td>
+                        <img src="{{ \Illuminate\Support\Str::startsWith($img->image_path, 'http') ? $img->image_path : asset('storage/' . $img->image_path) }}" class="thumb">
+                    </td>
                     <td>{{ $img->title ?? 'بدون عنوان' }}</td>
                     <td>
                         @if($img->category == 'buildings') المباني

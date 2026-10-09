@@ -66,8 +66,7 @@ class GalleryImageResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\ImageColumn::make('image_path')
-                    ->label('الصورة')
-                    ->getUploadedFileUrlUsing(fn ($state) => $state),
+                    ->label('الصورة'),
 
                 Tables\Columns\TextColumn::make('title')
                     ->label('العنوان')

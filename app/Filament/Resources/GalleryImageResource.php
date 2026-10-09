@@ -46,7 +46,6 @@ class GalleryImageResource extends Resource
                     ->image()
                     ->required()
                     ->saveUploadedFileUsing(function (TemporaryUploadedFile $file) {
-                        // إرسال الصورة مباشرة إلى API ImgBB
                         $apiKey = env('IMGBB_API_KEY', '775b65c05f359ca31c23e947124bd690');
                         
                         $response = Http::asMultipart()->post("https://api.imgbb.com/1/upload?key={$apiKey}", [
@@ -57,7 +56,7 @@ class GalleryImageResource extends Resource
                             return $response->json('data')['url'];
                         }
 
-                        throw new \Exception('فشل رفع الصورة إلى ImgBB: ' . $response->body());
+                        throw new \Exception('فشل رفع الصورة إلى ImgBB');
                     }),
             ]);
     }
@@ -68,7 +67,7 @@ class GalleryImageResource extends Resource
             ->columns([
                 Tables\Columns\ImageColumn::make('image_path')
                     ->label('الصورة')
-                    ->getUploadedFileUrlUsing(fn ($state) => $state), // لعرض رابط ImgBB المباشر في الجدول
+                    ->getUploadedFileUrlUsing(fn ($state) => $state),
 
                 Tables\Columns\TextColumn::make('title')
                     ->label('العنوان')

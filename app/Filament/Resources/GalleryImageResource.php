@@ -9,6 +9,8 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Http;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class GalleryImageResource extends Resource
 {
@@ -39,11 +41,24 @@ class GalleryImageResource extends Resource
                     ])
                     ->required(),
 
-                Forms\Components\TextInput::make('image_path')
-                    ->label('رابط الصورة المباشر')
-                    ->placeholder('https://i.ibb.co/...')
-                    ->url()
-                    ->required(),
+                Forms\Components\FileUpload::make('image_path')
+                    ->label('اختر الصورة من الجهاز')
+                    ->image()
+                    ->required()
+                    ->saveUploadedFileUsing(function (TemporaryUploadedFile $file) {
+                        // إرسال الصورة مباشرة إلى API ImgBB
+                        $apiKey = env('IMGBB_API_KEY', '775b65c05f359ca31c23e947124bd690');
+                        
+                        $response = Http::asMultipart()->post("https://api.imgbb.com/1/upload?key={$apiKey}", [
+                            'image' => base64_encode(file_get_contents($file->getRealPath())),
+                        ]);
+
+                        if ($response->successful() && isset($response->json('data')['url'])) {
+                            return $response->json('data')['url'];
+                        }
+
+                        throw new \Exception('فشل رفع الصورة إلى ImgBB: ' . $response->body());
+                    }),
             ]);
     }
 
@@ -52,7 +67,8 @@ class GalleryImageResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\ImageColumn::make('image_path')
-                    ->label('الصورة'),
+                    ->label('الصورة')
+                    ->getUploadedFileUrlUsing(fn ($state) => $state), // لعرض رابط ImgBB المباشر في الجدول
 
                 Tables\Columns\TextColumn::make('title')
                     ->label('العنوان')
@@ -69,9 +85,7 @@ class GalleryImageResource extends Resource
                         default => $state,
                     }),
             ])
-            ->filters([
-                //
-            ])
+            ->filters([])
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
@@ -85,9 +99,7 @@ class GalleryImageResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
     public static function getPages(): array

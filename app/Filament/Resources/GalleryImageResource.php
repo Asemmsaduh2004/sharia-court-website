@@ -9,8 +9,6 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Support\Facades\Http;
-use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class GalleryImageResource extends Resource
 {
@@ -44,20 +42,10 @@ class GalleryImageResource extends Resource
                 Forms\Components\FileUpload::make('image_path')
                     ->label('اختر الصورة من الجهاز')
                     ->image()
-                    ->required()
-                    ->saveUploadedFileUsing(function (TemporaryUploadedFile $file) {
-                        $apiKey = env('IMGBB_API_KEY', '775b65c05f359ca31c23e947124bd690');
-                        
-                        $response = Http::asMultipart()->post("https://api.imgbb.com/1/upload?key={$apiKey}", [
-                            'image' => base64_encode(file_get_contents($file->getRealPath())),
-                        ]);
-
-                        if ($response->successful() && isset($response->json('data')['url'])) {
-                            return $response->json('data')['url'];
-                        }
-
-                        throw new \Exception('فشل رفع الصورة إلى ImgBB');
-                    }),
+                    ->disk('s3')
+                    ->directory('uploads')
+                    ->visibility('public')
+                    ->required(),
             ]);
     }
 
@@ -67,6 +55,7 @@ class GalleryImageResource extends Resource
             ->columns([
                 Tables\Columns\ImageColumn::make('image_path')
                     ->label('الصورة')
+                    ->disk('s3')
                     ->circular(false),
 
                 Tables\Columns\TextColumn::make('title')

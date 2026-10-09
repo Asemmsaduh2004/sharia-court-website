@@ -66,7 +66,8 @@ class GalleryImageResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\ImageColumn::make('image_path')
-                    ->label('الصورة'),
+                    ->label('الصورة')
+                    ->circular(false),
 
                 Tables\Columns\TextColumn::make('title')
                     ->label('العنوان')

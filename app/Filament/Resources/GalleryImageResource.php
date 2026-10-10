@@ -42,10 +42,14 @@ class GalleryImageResource extends Resource
                 Forms\Components\FileUpload::make('image_path')
                     ->label('اختر الصورة من الجهاز')
                     ->image()
-                    ->disk('tmp') // التغيير هنا إلى tmp لتجاوز حظر الكتابة على Render
-                    ->directory('uploads')
-                    ->visibility('public')
-                    ->required(),
+                    ->required()
+                    // تحويل الصورة المرفوعة إلى Base64 لحفظها في قاعدة البيانات مباشرة بدون الحاجة لملفات على السيرفر
+                    ->dehydrateStateUsing(function ($state) {
+                        if (is_string($state)) {
+                            return $state;
+                        }
+                        return 'data:' . $state->getMimeType() . ';base64,' . base64_encode(file_get_contents($state->getRealPath()));
+                    }),
             ]);
     }
 
@@ -55,7 +59,6 @@ class GalleryImageResource extends Resource
             ->columns([
                 Tables\Columns\ImageColumn::make('image_path')
                     ->label('الصورة')
-                    ->disk('tmp') // التغيير هنا إلى tmp لقراءة الصور من القرص القابل للكتابة
                     ->circular(false),
 
                 Tables\Columns\TextColumn::make('title')

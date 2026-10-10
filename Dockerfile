@@ -54,7 +54,7 @@ EXPOSE 80
 
 # Setup directories, full permissions, migrations, seeders, storage link, and start apache
 CMD mkdir -p /app/database \
-    && mkdir -p /app/storage/app/public \
+    && mkdir -p /app/storage/app/public/livewire-tmp \
     && mkdir -p /app/storage/app/livewire-tmp \
     && mkdir -p /tmp/livewire-tmp \
     && touch /app/database/database.sqlite \

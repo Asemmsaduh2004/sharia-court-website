@@ -8,7 +8,16 @@ RUN apt-get update && apt-get install -y \
     libzip-dev \
     libicu-dev \
     libonig-dev \
-    && docker-php-ext-install pdo pdo_mysql pdo_pgsql zip intl mbstring
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install pdo pdo_mysql pdo_pgsql zip intl mbstring gd
+
+# Configure PHP upload limits
+RUN echo "upload_max_filesize = 64M" > /usr/local/etc/php/conf.d/uploads.ini \
+    && echo "post_max_size = 64M" >> /usr/local/etc/php/conf.d/uploads.ini \
+    && echo "memory_limit = 256M" >> /usr/local/etc/php/conf.d/uploads.ini
 
 # Enable Apache ModRewrite
 RUN a2enmod rewrite
@@ -33,7 +42,7 @@ WORKDIR /app
 # Copy application files
 COPY . .
 
-# Clean composer install and publish assets during build
+# Clean composer install
 RUN rm -rf vendor composer.lock \
     && composer install --no-interaction --prefer-dist --optimize-autoloader --no-scripts \
     && php artisan filament:upgrade || true
@@ -43,17 +52,18 @@ RUN cp -n .env.example .env || true
 
 EXPOSE 80
 
-# Setup directories, permissions, migrations, seeders, storage link, and start apache
+# Setup directories, full permissions, migrations, seeders, storage link, and start apache
 CMD mkdir -p /app/database \
-    && mkdir -p /app/storage/app/public/livewire-tmp \
+    && mkdir -p /app/storage/app/public \
+    && mkdir -p /app/storage/app/livewire-tmp \
+    && mkdir -p /tmp/livewire-tmp \
     && touch /app/database/database.sqlite \
-    && chown -R www-data:www-data /app/database /app/storage /app/bootstrap/cache \
-    && chmod -R 777 /app/database /app/storage /app/bootstrap/cache \
+    && chown -R www-data:www-data /app/database /app/storage /app/bootstrap/cache /tmp/livewire-tmp \
+    && chmod -R 777 /app/database /app/storage /app/bootstrap/cache /tmp/livewire-tmp \
     && php artisan key:generate --force \
     && php artisan migrate --force \
     && php artisan db:seed --force \
     && php artisan storage:link --force \
     && php artisan config:clear \
-    && php artisan route:clear \
-    && php artisan view:clear \
+    && php artisan cache:clear \
     && apache2-foreground

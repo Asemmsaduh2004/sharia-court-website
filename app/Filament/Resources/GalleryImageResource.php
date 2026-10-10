@@ -42,7 +42,7 @@ class GalleryImageResource extends Resource
                 Forms\Components\FileUpload::make('image_path')
                     ->label('اختر الصورة من الجهاز')
                     ->image()
-                    ->disk('s3')
+                    ->disk('public') // تم التعديل من s3 إلى public
                     ->directory('uploads')
                     ->visibility('public')
                     ->required(),
@@ -55,7 +55,7 @@ class GalleryImageResource extends Resource
             ->columns([
                 Tables\Columns\ImageColumn::make('image_path')
                     ->label('الصورة')
-                    ->disk('s3')
+                    ->disk('public') // تم التعديل من s3 إلى public
                     ->circular(false),
 
                 Tables\Columns\TextColumn::make('title')

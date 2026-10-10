@@ -41,7 +41,7 @@ return [
     */
 
     'temporary_file_upload' => [
-        'disk' => 'public',        // استخدام القرص العام public بدلاً من local
+        'disk' => 'tmp',        // استخدام القرص المؤقت tmp بدلاً من public
         'rules' => null,
         'directory' => 'livewire-tmp',
         'middleware' => null,

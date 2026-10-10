@@ -42,7 +42,7 @@ class GalleryImageResource extends Resource
                 Forms\Components\FileUpload::make('image_path')
                     ->label('اختر الصورة من الجهاز')
                     ->image()
-                    ->disk('public') // تم التعديل من s3 إلى public
+                    ->disk('tmp') // تم التعديل إلى tmp لتجاوز حظر الكتابة في Render
                     ->directory('uploads')
                     ->visibility('public')
                     ->required(),
@@ -55,7 +55,7 @@ class GalleryImageResource extends Resource
             ->columns([
                 Tables\Columns\ImageColumn::make('image_path')
                     ->label('الصورة')
-                    ->disk('public') // تم التعديل من s3 إلى public
+                    ->disk('tmp') // تم التعديل إلى tmp لعرض الصور المقروءة من المسار المؤقت
                     ->circular(false),
 
                 Tables\Columns\TextColumn::make('title')

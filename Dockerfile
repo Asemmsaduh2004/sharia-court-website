@@ -41,17 +41,14 @@ RUN rm -rf vendor composer.lock \
 # Create .env from .env.example if missing
 RUN cp -n .env.example .env || true
 
-# Set permissions for storage and bootstrap/cache
-RUN chmod -R 777 /app/storage /app/bootstrap/cache \
-    && chown -R www-data:www-data /app/storage /app/bootstrap/cache
-
 EXPOSE 80
 
-# Set up SQLite, permissions, migrations, seeders, and start apache
+# Setup directories, permissions, migrations, seeders, storage link, and start apache
 CMD mkdir -p /app/database \
+    && mkdir -p /app/storage/app/public/livewire-tmp \
     && touch /app/database/database.sqlite \
-    && chown -R www-data:www-data /app/database \
-    && chmod -R 777 /app/database \
+    && chown -R www-data:www-data /app/database /app/storage /app/bootstrap/cache \
+    && chmod -R 777 /app/database /app/storage /app/bootstrap/cache \
     && php artisan key:generate --force \
     && php artisan migrate --force \
     && php artisan db:seed --force \

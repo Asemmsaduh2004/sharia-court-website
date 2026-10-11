@@ -39,11 +39,12 @@ class GalleryImageResource extends Resource
                     ])
                     ->required(),
 
-                // تحويل الحقل إلى رابط مباشر لتفادي التخزين المؤقت على سيرفر Render
-                Forms\Components\TextInput::make('image_path')
-                    ->label('رابط الصورة المباشر (URL)')
-                    ->placeholder('https://example.com/image.jpg')
-                    ->url()
+                // إعادة زر الرفع المباشر من الجهاز بربطه بالسحابة
+                Forms\Components\FileUpload::make('image_path')
+                    ->label('اختر الصورة من الجهاز')
+                    ->image()
+                    ->disk('cloudinary')
+                    ->directory('gallery')
                     ->required(),
             ]);
     }

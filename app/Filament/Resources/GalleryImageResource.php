@@ -39,17 +39,12 @@ class GalleryImageResource extends Resource
                     ])
                     ->required(),
 
-                Forms\Components\FileUpload::make('image_path')
-                    ->label('اختر الصورة من الجهاز')
-                    ->image()
-                    ->required()
-                    // تحويل الصورة المرفوعة إلى Base64 لحفظها في قاعدة البيانات مباشرة بدون الحاجة لملفات على السيرفر
-                    ->dehydrateStateUsing(function ($state) {
-                        if (is_string($state)) {
-                            return $state;
-                        }
-                        return 'data:' . $state->getMimeType() . ';base64,' . base64_encode(file_get_contents($state->getRealPath()));
-                    }),
+                // تحويل الحقل إلى رابط مباشر لتفادي التخزين المؤقت على سيرفر Render
+                Forms\Components\TextInput::make('image_path')
+                    ->label('رابط الصورة المباشر (URL)')
+                    ->placeholder('https://example.com/image.jpg')
+                    ->url()
+                    ->required(),
             ]);
     }
 
